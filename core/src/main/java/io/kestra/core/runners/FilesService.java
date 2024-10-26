@@ -1,18 +1,22 @@
 package io.kestra.core.runners;
 
-import io.kestra.core.models.tasks.runners.PluginUtilsService;
-import io.kestra.core.utils.IdUtils;
-import org.apache.commons.io.IOUtils;
-import org.slf4j.Logger;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.AbstractMap;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.apache.commons.io.IOUtils;
+import org.slf4j.Logger;
+
+import io.kestra.core.models.tasks.runners.PluginUtilsService;
+import io.kestra.core.utils.IdUtils;
 import static io.kestra.core.utils.Rethrow.throwBiConsumer;
 import static io.kestra.core.utils.Rethrow.throwFunction;
 
@@ -39,9 +43,13 @@ public abstract class FilesService {
                      file.getParentFile().mkdirs();
                  }
 
+
                  if (input == null) {
                     file.createNewFile();
                  } else {
+                    String tempfileName = file.getName().replace(" ", "+");
+                    File tempfile = new File(tempfileName);
+                    file.renameTo(tempfile); 
                      if (input.startsWith("kestra://")) {
                          try (var is = runContext.storage().getFile(URI.create(input));
                               var out = new FileOutputStream(file)) {
