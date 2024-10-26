@@ -49,7 +49,7 @@ public abstract class FilesService {
                  } else {
                     String tempfileName = file.getName().replace(" ", "+");
                     File tempfile = new File(tempfileName);
-                    file.renameTo(tempfile);
+                    file.renameTo(tempfile); 
                      if (input.startsWith("kestra://")) {
                          try (var is = runContext.storage().getFile(URI.create(input));
                               var out = new FileOutputStream(file)) {
