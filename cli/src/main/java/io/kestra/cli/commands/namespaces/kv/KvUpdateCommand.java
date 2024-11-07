@@ -16,11 +16,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
 
-@CommandLine.Command(
-    name = "update",
-    description = "update value for a KV Store key",
-    mixinStandardHelpOptions = true
-)
+@CommandLine.Command(name = "update", description = "update value for a KV Store key", mixinStandardHelpOptions = true)
 @Slf4j
 public class KvUpdateCommand extends AbstractApiCommand {
 
@@ -33,13 +29,15 @@ public class KvUpdateCommand extends AbstractApiCommand {
     @CommandLine.Parameters(index = "2", description = "the value to assign to the key. If the value is an object, it must be in JSON format. If the value must be read from file, use -f parameter.")
     public String value;
 
-    @Option(names = {"-e", "--expiration"}, description = "the duration after which the key should expire.")
+    @Option(names = { "-e", "--expiration" }, description = "the duration after which the key should expire.")
     public String expiration;
 
-    @Option(names = {"-t", "--type"}, description = "the type of the value. Optional and useful to override the deduced type (eg. numbers, booleans or JSON as full string). Valid values: ${COMPLETION-CANDIDATES}.")
+    @Option(names = { "-t",
+            "--type" }, description = "the type of the value. Optional and useful to override the deduced type (eg. numbers, booleans or JSON as full string). Valid values: ${COMPLETION-CANDIDATES}.")
     public Type type;
 
-    @Option(names = {"-f", "--file-value"}, description = "the file from which to read the value to set. If this is provided, it will take precedence over any specified value.")
+    @Option(names = { "-f",
+            "--file-value" }, description = "the file from which to read the value to set. If this is provided, it will take precedence over any specified value.")
     public Path fileValue;
 
     @Override
@@ -56,10 +54,14 @@ public class KvUpdateCommand extends AbstractApiCommand {
 
         Duration ttl = expiration == null ? null : Duration.parse(expiration);
         MutableHttpRequest<String> request = HttpRequest
-            .PUT(apiUri("/namespaces/") + namespace + "/kv/" + key, value)
-            .contentType(MediaType.APPLICATION_JSON_TYPE);
+                .PUT(apiUri("/namespaces/") + namespace + "/kv/" + key, value)
+                .contentType(MediaType.APPLICATION_JSON_TYPE);
 
         if (ttl != null) {
+            if (ttl.isZero()) {
+                String temp = "PT1S";
+                ttl = Duration.parse(temp);
+            }
             request.header("ttl", ttl.toString());
         }
 
