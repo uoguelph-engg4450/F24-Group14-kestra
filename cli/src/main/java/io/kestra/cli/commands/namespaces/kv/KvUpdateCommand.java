@@ -58,7 +58,7 @@ public class KvUpdateCommand extends AbstractApiCommand {
                 .contentType(MediaType.APPLICATION_JSON_TYPE);
 
         if (ttl != null) {
-            if (ttl.isZero()) {
+            if (ttl.isZero()) { // Issue 4480
                 String temp = "PT1S";
                 ttl = Duration.parse(temp);
             }
