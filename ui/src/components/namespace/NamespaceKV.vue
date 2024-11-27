@@ -1,4 +1,14 @@
 <template>
+
+    <!-- Added search bar here -->
+    <el-input
+            v-model="searchQuery"
+            placeholder="Search by key"
+            @input="filterTable"
+            prefix-icon="el-icon-search"
+            clearable
+    />
+    
     <el-table
         :data="kvs"
         ref="table"
@@ -303,3 +313,54 @@
         },
     };
 </script>
+<script>
+export default {
+    data() {
+        return {
+            kv: {
+                key: undefined,
+                type: "STRING",
+                value: undefined,
+                ttl: undefined,
+                update: undefined
+            },
+            searchQuery: "", // The value entered in the search bar
+            filteredKvs: [] // Filtered array to display in the table
+        };
+    },
+    watch: {
+        // Update the filtered list when kvs changes
+        kvs: {
+            immediate: true,
+            handler() {
+                this.filterTable();
+            }
+        }
+    },
+    mounted() {
+        this.loadKvs();
+    },
+    methods: {
+        filterTable() {
+            const query = this.searchQuery.toLowerCase();
+            this.filteredKvs = this.kvs.filter((kv) =>
+                kv.key.toLowerCase().includes(query)
+            );
+        },
+        loadKvs() {
+            this.$store.dispatch("namespace/kvsList", {
+                id: this.$route.params.id
+            }).then(() => {
+                this.filterTable(); // Initialize filteredKvs
+            });
+        },
+        // Other existing methods remain unchanged
+    }
+};
+</script>
+<style scoped>
+.el-input {
+    margin-bottom: 16px; /* Add spacing below the search bar */
+    width: 100%; /* Full width */
+}
+</style>
